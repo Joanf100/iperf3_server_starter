@@ -7,7 +7,7 @@ required_mbps = 20
 
 
 def generate_iperf_commands(num_commands, start_port=5200):
-    base_command = "stdbuf -oL -eL iperf3 -s -p {}"
+    base_command = "stdbuf -oL -eL iperf3 -s -f m -p {}"
     commands = [base_command.format(port) for port in range(start_port, start_port + num_commands)]
     return commands
 
