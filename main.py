@@ -5,19 +5,11 @@ import time
 
 required_mbps = 20
 
-# Define the iperf3 commands to be executed
-commands = [
-    'stdbuf -oL -eL iperf3 -s -p 5200',
-    'stdbuf -oL -eL iperf3 -s -p 5201',
-    'stdbuf -oL -eL iperf3 -s -p 5202',
-    'stdbuf -oL -eL iperf3 -s -p 5203',
-    'stdbuf -oL -eL iperf3 -s -p 5204',
-    'stdbuf -oL -eL iperf3 -s -p 5205',
-    'stdbuf -oL -eL iperf3 -s -p 5206',
-    'stdbuf -oL -eL iperf3 -s -p 5207',
-    'stdbuf -oL -eL iperf3 -s -p 5208',
-    'stdbuf -oL -eL iperf3 -s -p 5209'
-]
+
+def generate_iperf_commands(num_commands, start_port=5200):
+    base_command = "stdbuf -oL -eL iperf3 -s -p {}"
+    commands = [base_command.format(port) for port in range(start_port, start_port + num_commands)]
+    return commands
 
 
 def manage_process_output(proce, proc_id, speed_queue):
@@ -55,6 +47,7 @@ def manage_process_output(proce, proc_id, speed_queue):
 processes = []
 speed_queue = Queue()
 
+commands = generate_iperf_commands(10)
 for i, cmd in enumerate(commands):
     proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     # Start a thread to handle this process's output
