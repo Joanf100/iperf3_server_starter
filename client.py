@@ -2,12 +2,17 @@ import subprocess
 import threading
 import time
 
-required_mbps = 20
+ip_server = "192.168.0.28"
+bandwidth = 25
+n_clients = 20
 
-def generate_iperf_commands(num_commands, start_port=5200):
-    base_command = "stdbuf -oL -eL iperf3 -c 192.168.140.47 -P 2 --reverse -t 60 -p {} -b 20M"
-    commands = [base_command.format(port) for port in range(start_port, start_port + num_commands)]
+
+def generate_iperf_commands(num_commands, ip_server, start_port=5200, bandwidth=25):
+    base_command = "stdbuf -oL -eL iperf3 -c {} --reverse -t 60 -p {} -b {}m"
+    commands = [base_command.format(ip_server, port, bandwidth) for port in range(start_port, start_port + num_commands)]
+    print(commands)
     return commands
+
 
 def manage_process_output(proce, id):
     while True:
@@ -18,24 +23,21 @@ def manage_process_output(proce, id):
 
 
 processes = []
-commands = generate_iperf_commands(10)
+commands = generate_iperf_commands(n_clients, ip_server, bandwidth=bandwidth)
 
 for i, cmd in enumerate(commands):
     proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-    # Start a thread to handle this process's output
     thread = threading.Thread(target=manage_process_output, args=(proc, i))
     thread.start()
     processes.append((proc, thread))
 
 try:
     print("iperf3 servers are running in the background...")
-    time.sleep(60)
+    time.sleep(65)
 finally:
-    # Ensure all iperf3 servers are terminated
     for proc, _ in processes:
         proc.terminate()
 
-    # Wait for all threads to finish
     for _, thread in processes:
         thread.join()
 
