@@ -32,7 +32,7 @@ for i, cmd in enumerate(commands):
     processes.append((proc, thread))
 
 try:
-    print("iperf3 servers are running in the background...")
+    print("iperf3 clients are running in the background...")
     time.sleep(65)
 finally:
     for proc, _ in processes:
@@ -41,4 +41,4 @@ finally:
     for _, thread in processes:
         thread.join()
 
-    print("All iperf3 servers have been terminated.")
+    print("All iperf3 clients have been terminated.")
